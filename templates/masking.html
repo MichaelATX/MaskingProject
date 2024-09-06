@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masking</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style2.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <div class="input-section">
+            <form id="maskingForm" method="POST">
+                <fieldset>
+                    <legend>Select Masking Options:</legend>
+                    <label>
+                        <input type="checkbox" name="masking_option" value="kata_kasar"> Swearing/Profanity
+                    </label>
+                    <label>
+                        <input type="checkbox" name="masking_option" value="email"> Private Email Address 
+                    </label>
+                    <label>
+                        <input type="checkbox" name="masking_option" value="link"> Usable Links (URL)
+                    </label>
+                    <label>
+                        <input type="checkbox" name="masking_option" value="nik"> Identity Number (NIK)
+                    </label>
+                </fieldset>
+
+                <h4>Your Text</h4>
+                <textarea id="text_input" name="text_input" rows="4" cols="50"></textarea>
+                <p id="word_count_warning" style="color: red; display: none;">100 Words Limit!</p>
+                <p id="checkbox_warning" style="color: red; display: none;">At least one option must be selected!</p>
+
+                <button id="maskingButton" type="submit" class="button" disabled>Masking</button>
+            </form>
+        </div>
+
+        <div class="output-section">
+            <h2>Result:</h2>
+            <p>{{ output }}</p>
+        </div>
+    </div>
+
+    <script>
+        // Referensi elemen HTML
+        const textInput = document.getElementById('text_input');
+        const maskingButton = document.getElementById('maskingButton');
+        const wordCountWarning = document.getElementById('word_count_warning');
+        const checkboxWarning = document.getElementById('checkbox_warning');
+        const checkboxes = document.querySelectorAll('input[name="masking_option"]');
+
+        // Fungsi untuk mengecek jumlah kata dan checkbox
+        function validateForm() {
+            const text = textInput.value;
+            const wordCount = text.split(/\s+/).filter(Boolean).length; // Hitung kata
+
+            // Cek apakah lebih dari 100 kata
+            if (wordCount > 100) {
+                wordCountWarning.style.display = 'block';
+            } else {
+                wordCountWarning.style.display = 'none';
+            }
+
+            // Cek apakah setidaknya ada satu checkbox yang dipilih
+            const isChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+            if (!isChecked) {
+                checkboxWarning.style.display = 'block';
+            } else {
+                checkboxWarning.style.display = 'none';
+            }
+
+            // Aktifkan tombol submit hanya jika kata <= 100 dan setidaknya satu opsi dipilih
+            maskingButton.disabled = wordCount > 100 || !isChecked;
+        }
+
+        // Event listener untuk textarea dan checkbox
+        textInput.addEventListener('input', validateForm);
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', validateForm);
+        });
+
+        // Inisialisasi validasi saat halaman dimuat
+        validateForm();
+    </script>
+</body>
+
+</html>
